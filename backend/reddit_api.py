@@ -19,6 +19,7 @@ reddit = praw.Reddit(
 )
 
 def fetch_test_pennystocks_posts():
+    # TODO: Can we filter based on time of post/comment
     """Fetch a small number of posts from r/pennystocks (free-tier safe)."""
     logging.info("Fetching test posts from r/pennystocks...")  # Debugging output
     subreddit = reddit.subreddit("pennystocks")
