@@ -3,13 +3,12 @@ import os
 import logging
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
 
-# Configure logging to see when the API is called
+# ogging to see when the API is called
 logging.basicConfig(level=logging.INFO)
 
-# Reddit API Credentials (stored in .env)
+# these are stored in .env
 reddit = praw.Reddit(
     client_id=os.getenv("REDDIT_CLIENT_ID"),
     client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
@@ -19,19 +18,44 @@ reddit = praw.Reddit(
 )
 
 def fetch_test_pennystocks_posts():
-    """Fetch a small number of posts from r/pennystocks (free-tier safe)."""
-    logging.info("Fetching test posts from r/pennystocks...")  # Debugging output
+    #2 posts from /pennystocks
+    logging.info("Fetching test posts from r/pennystocks...")
     subreddit = reddit.subreddit("pennystocks")
     
-    posts = []
-    for post in subreddit.new(limit=2):  # Fetch ONLY 2 posts
+    posts = []   #this line below is what changes what section so .new is new and .hot is hot
+    for post in subreddit.hot(limit=1):  # Fetch only 1 keep it cheap for testing
         posts.append({
+            "id": post.id,              
             "title": post.title,
             "url": post.url,
             "created_utc": post.created_utc,
             "score": post.score,
-            "num_comments": post.num_comments
+            "num_comments": post.num_comments,
+            "permalink": post.permalink
         })
     
-    logging.info(f"Fetched {len(posts)} posts successfully!")  # Debugging output
+    logging.info(f"Fetched {len(posts)} posts successfully!")
     return posts
+
+def fetch_post_comments(post_id):
+   
+   #Given a Reddit post ID, fetch its top-level comments reddit bot comments havent get removed accully user bots
+    
+    logging.info(f"Fetching comments for post ID: {post_id}")
+    submission = reddit.submission(id=post_id)
+    # most recentcomments
+    submission.comments.replace_more(limit=0)
+    
+    comments_data = []
+    for comment in submission.comments:
+        # skip AutoModerator comments this is the bot comment that is always there on a post
+        if comment.author and comment.author.name == "AutoModerator":
+            continue
+
+        comments_data.append({
+            "body": comment.body,
+            "score": comment.score
+        })
+    
+    logging.info(f"Fetched {len(comments_data)} comments for post ID: {post_id}")
+    return comments_data
