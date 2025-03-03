@@ -1,19 +1,21 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const PostCard = ({ post }) => {
   return (
     <div className="border border-gray-600 rounded-lg p-4 shadow-md bg-gray-700 text-white">
       <h2 className="text-lg font-bold mb-2">
-        <a
-          href={post.url}
-          target="_blank"
-          rel="noopener noreferrer"
+        {/* link to comments page when pressed*/}
+        <Link
+          to={`/post/${post.id}`}
           className="text-blue-400 hover:underline"
         >
           {post.title}
-        </a>
+        </Link>
       </h2>
-      <p className="text-gray-400">👍 {post.score} | 💬 {post.num_comments} comments</p>
+      <p className="text-gray-400">
+        👍 {post.score} | 💬 {post.num_comments} comments
+      </p>
     </div>
   );
 };
