@@ -3,7 +3,8 @@ import os
 import logging
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv('.env.local')
+
 
 # ogging to see when the API is called
 logging.basicConfig(level=logging.INFO)
