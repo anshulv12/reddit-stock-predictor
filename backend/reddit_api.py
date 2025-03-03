@@ -19,14 +19,18 @@ reddit = praw.Reddit(
 )
 
 def fetch_test_pennystocks_posts():
-    #2 posts from /pennystocks
-    logging.info("Fetching test posts from r/pennystocks...")
+    """Fetch a non-stickied post from r/pennystocks (hot section)."""
+    logging.info("Fetching test posts from r/pennystocks (hot section)...")
     subreddit = reddit.subreddit("pennystocks")
     
-    posts = []   #this line below is what changes what section so .new is new and .hot is hot
-    for post in subreddit.hot(limit=1):  # Fetch only 1 keep it cheap for testing
+    posts = []
+    # Increase the limit so that we can filter out stickied posts
+    for post in subreddit.hot(limit=10):
+        # Skip community highlight or sticky posts
+        if post.stickied:
+            continue
         posts.append({
-            "id": post.id,              
+            "id": post.id,
             "title": post.title,
             "url": post.url,
             "created_utc": post.created_utc,
@@ -34,13 +38,17 @@ def fetch_test_pennystocks_posts():
             "num_comments": post.num_comments,
             "permalink": post.permalink
         })
-    
-    logging.info(f"Fetched {len(posts)} posts successfully!")
+        # stop once we have at least 1 post for testing change 1 to different num fi want more
+        if len(posts) >= 1:
+            break
+
+    logging.info(f"Fetched {len(posts)} non-stickied post(s) successfully!")
     return posts
+
 
 def fetch_post_comments(post_id):
    
-   #Given a Reddit post ID, fetch its top-level comments reddit bot comments havent get removed accully user bots
+   #top-level comments reddit bot comments havent get removed accully user bots
     
     logging.info(f"Fetching comments for post ID: {post_id}")
     submission = reddit.submission(id=post_id)
